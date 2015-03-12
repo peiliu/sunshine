@@ -5,15 +5,18 @@ package com.example.pei.sunshine2;
  */
 public class WeatherData {
 
-    int min;
-    int max;
+    Double min;
+    Double max;
     int datetime;
-    int description;
+    String description;
 
-    public WeatherData(int min, int max, int datetime, int description) {
+    public WeatherData(Double min, Double max, int datetime, String description) {
         this.min = min;
         this.max = max;
         this.datetime = datetime;
         this.description = description;
+    }
+
+    public WeatherData() {
     }
 }
