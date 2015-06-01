@@ -19,4 +19,10 @@ public class WeatherData {
 
     public WeatherData() {
     }
+
+    @Override
+    public String toString()
+    {
+        return ("min " + min.toString() + " max " + max.toString() + description);
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.pei.sunshine2;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -7,16 +8,18 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class ForecastFragment extends Fragment implements AsyncResponse {
 
+    private WeatherDataAdaptor weatherAdapter;
     public ForecastFragment() {
     }
 
@@ -40,15 +43,27 @@ public class ForecastFragment extends Fragment implements AsyncResponse {
         };
 
         WeatherDataJsonParser weatherDataJsonParser = new WeatherDataJsonParser();
-        ArrayAdapter<String> weatherAdapter = new ArrayAdapter<String>(
-                getActivity(),
-                R.layout.list_item_forecast,
-                R.id.list_item_forecast_textview,
-                weekForecast);
-
+        //List<String> items = new ArrayList<String>(Arrays.asList(weekForecast));
+        List<WeatherData> items = new ArrayList<WeatherData>();
+        weatherAdapter = new WeatherDataAdaptor(getActivity(), items);
 
         ListView list = (ListView) rootView.findViewById(R.id.list_item_forecast_listview);
         list.setAdapter(weatherAdapter);
+
+        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
+        fetchWeatherTask.delegate = this;
+        fetchWeatherTask.execute(89052);
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //Toast.makeText(getActivity(), "hello", Toast.LENGTH_SHORT).show();
+                String item = weatherAdapter.getItem(i).toString();
+                Intent wdIntent = new Intent(getActivity(), WeatherDetails.class);
+                wdIntent.putExtra("item", item);
+                startActivity(wdIntent);
+            }
+        });
         return rootView;
     }
 
@@ -66,7 +81,7 @@ public class ForecastFragment extends Fragment implements AsyncResponse {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
             FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
-            //new FetchWeatherTask().execute(89052);
+            fetchWeatherTask.delegate = this;
             fetchWeatherTask.execute(89052);
 
         }
@@ -77,5 +92,7 @@ public class ForecastFragment extends Fragment implements AsyncResponse {
     public void processFinish(String output) {
         WeatherDataJsonParser weatherDataJsonParser = new WeatherDataJsonParser();
         ArrayList<WeatherData> weatherDataArrayList = weatherDataJsonParser.Parse(output);
+        weatherAdapter.clear();
+        weatherAdapter.addAll(weatherDataArrayList);
     }
 }

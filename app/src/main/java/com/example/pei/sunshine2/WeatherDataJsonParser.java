@@ -81,14 +81,15 @@ import java.util.ArrayList;
  */
 public class WeatherDataJsonParser {
 
-    ArrayList<WeatherData> weatherDataList;
+
 
     public WeatherDataJsonParser() {
-        weatherDataList = new ArrayList<WeatherData>();
+
     }
 
-    public ArrayList<WeatherData> Parse(String jsonWeatherString)
+    static public ArrayList<WeatherData> Parse(String jsonWeatherString)
     {
+        ArrayList<WeatherData> weatherDataList = new ArrayList<WeatherData>();;
         String TAG = "WeatherDataParser";
         try {
             JSONObject wholeJson = new JSONObject(jsonWeatherString);
@@ -96,9 +97,10 @@ public class WeatherDataJsonParser {
 
             for (int i = 0; i < jsonTempList.length(); i++) {
                 JSONObject temperature = jsonTempList.getJSONObject(i);
+                JSONObject temp = temperature.getJSONObject("temp");
                 WeatherData weatherData = new WeatherData();
-                weatherData.min = temperature.getDouble("min");
-                weatherData.max = temperature.getDouble("max");
+                weatherData.min = temp.getDouble("min");
+                weatherData.max = temp.getDouble("max");
                 JSONArray weatherList = temperature.getJSONArray("weather");
                 JSONObject weather = weatherList.getJSONObject(0);
                 weatherData.description = weather.getString("main");
